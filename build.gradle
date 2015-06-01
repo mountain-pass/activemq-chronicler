@@ -1,0 +1,42 @@
+buildscript {
+	repositories { mavenCentral() }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+jar { baseName = 'activemq-chronicler' }
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+repositories { mavenCentral() }
+
+dependencies {
+	compile('net.openhft:chronicle:3.4.3')
+	compile('org.apache.activemq:activemq-broker:5.11.1')
+	
+	testCompile('info.cukes:cucumber-java:1.2.2')
+	testCompile('info.cukes:cucumber-junit:1.2.2')
+	testCompile('info.cukes:cucumber-spring:1.2.2')
+
+}
+
+
+eclipse {
+	classpath {
+		containers.remove('org.eclipse.jdt.launching.JRE_CONTAINER')
+		containers 'org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7'
+	}
+}
+
+task wrapper(type: Wrapper) { gradleVersion = '2.3' }
+
+test {
+	ext.outputDir = "${buildDir}/test-results"
+	outputs.dir file(outputDir)
+	systemProperties 'cucumber.options':  "--plugin json:${outputDir}/cucumber.json --plugin html:${outputDir}/html --plugin junit:${outputDir}/TEST-cucumber.xml"
+}
+
+test.ignoreFailures = true
