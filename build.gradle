@@ -13,14 +13,13 @@ targetCompatibility = 1.7
 
 repositories { mavenCentral() }
 
+
 dependencies {
 	compile('net.openhft:chronicle:3.4.3')
 	compile('org.apache.activemq:activemq-broker:5.11.1')
 	
 	testCompile('info.cukes:cucumber-java:1.2.2')
 	testCompile('info.cukes:cucumber-junit:1.2.2')
-	testCompile('info.cukes:cucumber-spring:1.2.2')
-
 }
 
 
