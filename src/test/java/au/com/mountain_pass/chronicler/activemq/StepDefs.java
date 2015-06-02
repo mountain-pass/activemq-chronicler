@@ -7,10 +7,8 @@ import java.util.Map;
 
 import javax.jms.JMSException;
 
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import au.com.mountain_pass.chronicler.Chronicler;
 import au.com.mountain_pass.chronicler.MessageBroker;
@@ -19,7 +17,6 @@ import cucumber.api.java.Before;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:spring-beans.xml")
 public class StepDefs {
 
