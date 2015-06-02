@@ -41,9 +41,9 @@ eclipse {
 task wrapper(type: Wrapper) { gradleVersion = '2.3' }
 
 test {
-	ext.outputDir = "${buildDir}/test-results"
+	ext.outputDir = System.getenv("CIRCLE_TEST_REPORTS") ?: buildDir 
 	outputs.dir file(outputDir)
-	systemProperties 'cucumber.options':  "--plugin json:${outputDir}/cucumber.json --plugin html:${outputDir}/html --plugin junit:${outputDir}/TEST-cucumber.xml"
+	systemProperties 'cucumber.options':  "--plugin json:${outputDir}/cucumber/activemq-chronicler.cucumber --plugin html:${outputDir}/html --plugin junit:${outputDir}/TEST-activemq-chronicler.xml"
 }
 
 test.ignoreFailures = true
