@@ -17,9 +17,17 @@ repositories { mavenCentral() }
 dependencies {
 	compile('net.openhft:chronicle:3.4.3')
 	compile('org.apache.activemq:activemq-broker:5.11.1')
-	
+	compile('org.apache.activemq:activemq-kahadb-store:5.11.1')
+	compile('com.fasterxml.jackson.core:jackson-databind:2.5.3')
+
 	testCompile('info.cukes:cucumber-java:1.2.2')
 	testCompile('info.cukes:cucumber-junit:1.2.2')
+	testCompile('info.cukes:cucumber-spring:1.2.2')
+    testCompile('org.springframework:spring-beans:4.1.5.RELEASE')
+    testCompile('org.springframework:spring-context:4.1.5.RELEASE')
+    testCompile('org.springframework:spring-test:4.1.5.RELEASE')
+    testCompile('org.springframework:spring-jms:4.1.5.RELEASE')
+	testCompile('org.apache.activemq:activemq-spring:5.11.1')
 }
 
 

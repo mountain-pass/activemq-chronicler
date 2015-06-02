@@ -7,6 +7,6 @@ import cucumber.api.junit.Cucumber;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(glue = { "au.com.mountain_pass.chronicler.activemq" }, plugin = { "pretty" })
-public class ActiveMqChroniclerTest {
+public class ActiveMQChroniclerTest {
 
 }
