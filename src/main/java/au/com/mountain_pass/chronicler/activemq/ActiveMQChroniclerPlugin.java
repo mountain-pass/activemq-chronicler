@@ -5,30 +5,32 @@ import java.io.IOException;
 import org.apache.activemq.broker.Broker;
 import org.apache.activemq.broker.BrokerPlugin;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public class ActiveMQChroniclerPlugin implements BrokerPlugin {
 
 	private ActiveMQChroniclerFilter activeMqChroniclerFilter;
-	private ObjectMapper objectMapper;
+	private String basePath = System.getProperty("java.io.tmpdir")
+			+ "/activemq-chronicler";
 
 	public ActiveMQChroniclerPlugin() {
-		this.objectMapper = new ObjectMapper();
-	}
-
-	public ActiveMQChroniclerPlugin(ObjectMapper objectMapper) {
-		this.objectMapper = objectMapper;
 	}
 
 	@Override
 	public Broker installPlugin(Broker broker) throws Exception {
 		activeMqChroniclerFilter = new ActiveMQChroniclerFilter(broker,
-				objectMapper);
+				basePath);
 		return activeMqChroniclerFilter;
 	}
 
 	public void shutdown() throws IOException {
 		activeMqChroniclerFilter.shutdown();
+	}
+
+	/**
+	 * @param basePath
+	 *            the basePath to set
+	 */
+	public void setBasePath(String basePath) {
+		this.basePath = basePath;
 	}
 
 }

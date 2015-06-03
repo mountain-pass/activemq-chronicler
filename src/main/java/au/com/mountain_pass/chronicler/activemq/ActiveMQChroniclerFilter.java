@@ -1,6 +1,5 @@
 package au.com.mountain_pass.chronicler.activemq;
 
-import java.io.File;
 import java.io.IOException;
 
 import javax.jms.TextMessage;
@@ -15,25 +14,15 @@ import org.apache.activemq.broker.BrokerFilter;
 import org.apache.activemq.broker.ProducerBrokerExchange;
 import org.apache.activemq.command.Message;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 public class ActiveMQChroniclerFilter extends BrokerFilter {
 
 	private Chronicle chronicle;
 	private ExcerptAppender appender;
-	private ObjectMapper objectMapper;
 
-	public ActiveMQChroniclerFilter(Broker next, ObjectMapper objectMapper)
+	public ActiveMQChroniclerFilter(Broker next, String basePath)
 			throws IOException {
 		super(next);
-		this.objectMapper = objectMapper;
-		File.createTempFile("activemq", "chronicle");
-		String basePath = System.getProperty("java.io.tmpdir")
-				+ "/getting-startedXXY";
-		File base = new File(basePath);
-		String[] list = base.list();
-		base.deleteOnExit();
-		chronicle = ChronicleQueueBuilder.indexed(base).synchronous(true)
+		chronicle = ChronicleQueueBuilder.indexed(basePath).synchronous(true)
 				.build();
 
 		appender = chronicle.createAppender();

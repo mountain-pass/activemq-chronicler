@@ -12,20 +12,15 @@ import net.openhft.lang.model.DataValueClasses;
 import org.junit.Assert;
 
 import au.com.mountain_pass.chronicler.activemq.ActiveMQEvent;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import cucumber.api.PendingException;
 
 public class Chronicler {
 
 	private Chronicle chronicle;
 	private ExcerptTailer reader;
-	private ObjectMapper objectMapper = new ObjectMapper();
 
 	public void connect() throws IOException {
-		String basePath = System.getProperty("java.io.tmpdir")
-				+ "/getting-startedXXY";
+		String basePath = "build/amqc";
 		chronicle = ChronicleQueueBuilder.indexed(basePath).build();
 		// Obtain an ExcerptTailer
 		reader = chronicle.createTailer().toEnd();
