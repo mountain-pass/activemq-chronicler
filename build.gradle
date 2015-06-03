@@ -1,4 +1,4 @@
-buildscript { 
+buildscript {
 	repositories {
 		if (project.hasProperty('wrrepousername')) {
 			maven {
@@ -14,9 +14,7 @@ buildscript {
 		}
 		maven { url 'http://repo.spring.io/plugins-release' }
 	}
-	dependencies {
-		classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7'
-	}
+	dependencies { classpath 'org.springframework.build.gradle:propdeps-plugin:0.0.7' }
 }
 
 configure(allprojects) {
@@ -51,14 +49,16 @@ repositories {
 	}
 }
 
-uploadArchives {
-	repositories {
-		mavenDeployer {
-			repository(url: "https://windyroad.artifactoryonline.com/windyroad/rel") {
-				authentication(userName: "${wrrepousername}", password: "${wrrepopassword}")
-			}
-			snapshotRepository(url: "https://windyroad.artifactoryonline.com/windyroad/snaps") {
-				authentication(userName: "${wrrepousername}", password: "${wrrepopassword}")
+if (project.hasProperty('wrrepousername')) {
+	uploadArchives {
+		repositories {
+			mavenDeployer {
+				repository(url: "https://windyroad.artifactoryonline.com/windyroad/rel") {
+					authentication(userName: "${wrrepousername}", password: "${wrrepopassword}")
+				}
+				snapshotRepository(url: "https://windyroad.artifactoryonline.com/windyroad/snaps") {
+					authentication(userName: "${wrrepousername}", password: "${wrrepopassword}")
+				}
 			}
 		}
 	}
@@ -68,7 +68,7 @@ dependencies {
 	provided('org.apache.activemq:activemq-broker:5.11.1')
 
 	compile('net.openhft:chronicle:3.4.3')
-	
+
 	testCompile('org.apache.activemq:activemq-kahadb-store:5.11.1')
 	testCompile('info.cukes:cucumber-java:1.2.2')
 	testCompile('info.cukes:cucumber-junit:1.2.2')
