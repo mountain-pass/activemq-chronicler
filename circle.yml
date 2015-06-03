@@ -1,0 +1,6 @@
+deployment:
+  production:
+    branch: production
+    commands:
+      - gradle uploadArchives
+      
