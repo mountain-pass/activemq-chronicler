@@ -4,7 +4,7 @@
 SHA1=$1
 
 # Deploy image to Docker Hub
-docker push mountain-pass/activemq-chronicler:$SHA1
+docker push mountain_pass/activemq-chronicler:$SHA1
 
 # Create new Elastic Beanstalk version
 EB_BUCKET=activemq-chronicler-bucket
