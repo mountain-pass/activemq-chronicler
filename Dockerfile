@@ -7,7 +7,7 @@ EXPOSE 61613
 EXPOSE 1883
 EXPOSE 61614
 
-ADD activemq-chronicler/src/main/resources/activemq.xml /opt/activemq/conf/activemq.xml
+ADD src/main/resources/activemq.xml /opt/activemq/conf/activemq.xml
 
 ADD build/libs/activemq-chronicler.jar /opt/activemq/activemq-chronicler.jar
 ADD ~/.gradle/caches/modules-2/files-2.1/net.openhft/chronicle/3.4.3/b5952d63bb27751a50fb52598d7a7ee811bf3aee/chronicle-3.4.3.jar /opt/activemq/chronicle-3.4.3.jar
