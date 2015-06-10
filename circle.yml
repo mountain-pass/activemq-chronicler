@@ -7,7 +7,7 @@ machine:
 dependencies:
   pre:
     - pip install awscli
-    - gradle build
+    - gradle build copyToLib
     - docker build -t mountain_pass/activemq-chronicler:$CIRCLE_SHA1 .
 
 test:

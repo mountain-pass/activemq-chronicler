@@ -97,3 +97,8 @@ test {
 }
 
 test.ignoreFailures = true
+
+task copyToLib(type: Copy) {
+	into "$buildDir/libs"
+	from configurations.runtime
+}
