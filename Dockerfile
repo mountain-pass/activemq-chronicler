@@ -9,5 +9,5 @@ EXPOSE 61614
 
 ADD src/main/resources/activemq.xml /opt/activemq/conf/activemq.xml
 
-ADD build/libs*.jar /opt/activemq/
+ADD build/libs/*.jar /opt/activemq/
 CMD ["/opt/activemq/bin/activemq", "start"]
