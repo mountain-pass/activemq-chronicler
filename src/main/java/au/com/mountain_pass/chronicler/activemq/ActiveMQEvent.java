@@ -34,4 +34,8 @@ public interface ActiveMQEvent extends Byteable {
 
 	public String getClientId();
 
+	public void setTimestamp(long timestamp);
+
+	public long getTimestamp();
+
 }

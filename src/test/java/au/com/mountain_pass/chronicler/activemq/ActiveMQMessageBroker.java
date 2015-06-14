@@ -9,8 +9,10 @@ import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
+import javax.jms.TextMessage;
 
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.command.ActiveMQQueue;
@@ -47,7 +49,6 @@ public class ActiveMQMessageBroker implements MessageBroker {
 
 		MessageProducer producer = session.createProducer(dest);
 		producer.send(session.createTextMessage(msg));
-		Message msgReceived = consumer.receive(2000);
 	}
 
 	private Map<String, Connection> connections = new HashMap<>();
@@ -73,18 +74,19 @@ public class ActiveMQMessageBroker implements MessageBroker {
 		Destination dest = new ActiveMQQueue(destination);
 		Session session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
 		consumer = session.createConsumer(dest);
-		// consumer.setMessageListener(new MessageListener() {
-		//
-		// @Override
-		// public void onMessage(Message message) {
-		// try {
-		// LOGGER.info("received message: {}",
-		// ((TextMessage) message).getText());
-		// } catch (JMSException e) {
-		// LOGGER.error("could not receive message", e);
-		// }
-		// }
-		// });
+		consumer.setMessageListener(new MessageListener() {
+
+			@Override
+			public void onMessage(Message message) {
+				try {
+					LOGGER.info("received message: {}",
+							((TextMessage) message).getText());
+				} catch (JMSException e) {
+					LOGGER.error("could not receive message", e);
+				}
+			}
+		});
+		conn.start();
 	}
 
 	@Override

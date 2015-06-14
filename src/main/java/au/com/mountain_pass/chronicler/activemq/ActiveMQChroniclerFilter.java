@@ -18,6 +18,7 @@ import org.apache.activemq.broker.region.MessageReference;
 import org.apache.activemq.broker.region.Subscription;
 import org.apache.activemq.command.Message;
 import org.apache.activemq.command.MessageAck;
+import org.apache.activemq.command.MessageDispatch;
 
 public class ActiveMQChroniclerFilter extends BrokerFilter {
 
@@ -55,11 +56,29 @@ public class ActiveMQChroniclerFilter extends BrokerFilter {
 		event.setDestination(msg.getDestination().getQualifiedName());
 		event.setMessage(((TextMessage) msg).getText());
 		event.setClientId(producerExchange.getConnectionContext().getClientId());
+		event.setTimestamp(msg.getBrokerInTime());
 		appender.startExcerpt(event.maxSize());
 		appender.write(event);
 		appender.finish();
 
-		super.send(producerExchange, msg);
+		next.send(producerExchange, msg);
+
+		for (Subscription consumer : producerExchange.getRegionDestination()
+				.getConsumers()) {
+			final ActiveMQEvent recvEvent = DataValueClasses
+					.newDirectInstance(ActiveMQEvent.class);
+
+			event.setState(ActiveMQEvent.CAPTURED);
+			event.setType(ActiveMQEvent.RECV);
+			event.setDestination(msg.getDestination().getQualifiedName());
+			event.setMessage(((TextMessage) msg).getText());
+			event.setClientId(consumer.getConsumerInfo().getClientId());
+			event.setTimestamp(msg.getBrokerOutTime());
+			appender.startExcerpt(event.maxSize());
+			appender.write(event);
+			appender.finish();
+		}
+
 	}
 
 	@Override
@@ -141,18 +160,28 @@ public class ActiveMQChroniclerFilter extends BrokerFilter {
 	@Override
 	public void acknowledge(ConsumerBrokerExchange consumerExchange,
 			MessageAck ack) throws Exception {
-		final ActiveMQEvent event = DataValueClasses
-				.newDirectInstance(ActiveMQEvent.class);
+		// final ActiveMQEvent event = DataValueClasses
+		// .newDirectInstance(ActiveMQEvent.class);
+		//
+		// event.setState(ActiveMQEvent.CAPTURED);
+		// event.setType(ActiveMQEvent.RECV);
+		// event.setDestination(ack.getDestination().getQualifiedName());
+		// // event.setMessage(((TextMessage) ack.get).getText());
+		// event.setClientId(consumerExchange.getConnectionContext().getClientId());
+		// appender.startExcerpt(event.maxSize());
+		// appender.write(event);
+		// appender.finish();
+		next.acknowledge(consumerExchange, ack);
+	}
 
-		event.setState(ActiveMQEvent.CAPTURED);
-		event.setType(ActiveMQEvent.RECV);
-		event.setDestination(ack.getDestination().getQualifiedName());
-		// event.setMessage(((TextMessage) ack.get).getText());
-		event.setClientId(consumerExchange.getConnectionContext().getClientId());
-		appender.startExcerpt(event.maxSize());
-		appender.write(event);
-		appender.finish();
-		super.acknowledge(consumerExchange, ack);
+	@Override
+	public void preProcessDispatch(MessageDispatch messageDispatch) {
+		next.preProcessDispatch(messageDispatch);
+	}
+
+	@Override
+	public void postProcessDispatch(MessageDispatch messageDispatch) {
+		next.postProcessDispatch(messageDispatch);
 	}
 
 }
