@@ -11,8 +11,13 @@ import net.openhft.lang.model.DataValueClasses;
 
 import org.apache.activemq.broker.Broker;
 import org.apache.activemq.broker.BrokerFilter;
+import org.apache.activemq.broker.ConnectionContext;
+import org.apache.activemq.broker.ConsumerBrokerExchange;
 import org.apache.activemq.broker.ProducerBrokerExchange;
+import org.apache.activemq.broker.region.MessageReference;
+import org.apache.activemq.broker.region.Subscription;
 import org.apache.activemq.command.Message;
+import org.apache.activemq.command.MessageAck;
 
 public class ActiveMQChroniclerFilter extends BrokerFilter {
 
@@ -49,6 +54,7 @@ public class ActiveMQChroniclerFilter extends BrokerFilter {
 		event.setType(ActiveMQEvent.SEND);
 		event.setDestination(msg.getDestination().getQualifiedName());
 		event.setMessage(((TextMessage) msg).getText());
+		event.setClientId(producerExchange.getConnectionContext().getClientId());
 		appender.startExcerpt(event.maxSize());
 		appender.write(event);
 		appender.finish();
@@ -56,9 +62,97 @@ public class ActiveMQChroniclerFilter extends BrokerFilter {
 		super.send(producerExchange, msg);
 	}
 
-	public void shutdown() throws IOException {
+	@Override
+	public void stop() throws Exception {
 		appender.close();
 		chronicle.close();
+		super.stop();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.apache.activemq.broker.BrokerFilter#messageExpired(org.apache.activemq
+	 * .broker.ConnectionContext,
+	 * org.apache.activemq.broker.region.MessageReference,
+	 * org.apache.activemq.broker.region.Subscription)
+	 */
+	@Override
+	public void messageExpired(ConnectionContext context,
+			MessageReference message, Subscription subscription) {
+		// TODO Auto-generated method stub
+		super.messageExpired(context, message, subscription);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.apache.activemq.broker.BrokerFilter#messageConsumed(org.apache.activemq
+	 * .broker.ConnectionContext,
+	 * org.apache.activemq.broker.region.MessageReference)
+	 */
+	@Override
+	public void messageConsumed(ConnectionContext context,
+			MessageReference messageReference) {
+		// TODO Auto-generated method stub
+		super.messageConsumed(context, messageReference);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.apache.activemq.broker.BrokerFilter#messageDelivered(org.apache.activemq
+	 * .broker.ConnectionContext,
+	 * org.apache.activemq.broker.region.MessageReference)
+	 */
+	@Override
+	public void messageDelivered(ConnectionContext context,
+			MessageReference messageReference) {
+		// TODO Auto-generated method stub
+		super.messageDelivered(context, messageReference);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.apache.activemq.broker.BrokerFilter#messageDiscarded(org.apache.activemq
+	 * .broker.ConnectionContext,
+	 * org.apache.activemq.broker.region.Subscription,
+	 * org.apache.activemq.broker.region.MessageReference)
+	 */
+	@Override
+	public void messageDiscarded(ConnectionContext context, Subscription sub,
+			MessageReference messageReference) {
+		// TODO Auto-generated method stub
+		super.messageDiscarded(context, sub, messageReference);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.apache.activemq.broker.BrokerFilter#acknowledge(org.apache.activemq
+	 * .broker.ConsumerBrokerExchange, org.apache.activemq.command.MessageAck)
+	 */
+	@Override
+	public void acknowledge(ConsumerBrokerExchange consumerExchange,
+			MessageAck ack) throws Exception {
+		final ActiveMQEvent event = DataValueClasses
+				.newDirectInstance(ActiveMQEvent.class);
+
+		event.setState(ActiveMQEvent.CAPTURED);
+		event.setType(ActiveMQEvent.RECV);
+		event.setDestination(ack.getDestination().getQualifiedName());
+		// event.setMessage(((TextMessage) ack.get).getText());
+		event.setClientId(consumerExchange.getConnectionContext().getClientId());
+		appender.startExcerpt(event.maxSize());
+		appender.write(event);
+		appender.finish();
+		super.acknowledge(consumerExchange, ack);
 	}
 
 }

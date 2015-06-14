@@ -30,4 +30,8 @@ public interface ActiveMQEvent extends Byteable {
 
 	public void setMessage(@MaxSize String msg);
 
+	public void setClientId(@MaxSize String clientId);
+
+	public String getClientId();
+
 }

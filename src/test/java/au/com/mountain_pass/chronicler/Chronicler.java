@@ -51,6 +51,10 @@ public class Chronicler {
 						Assert.assertEquals(entry.getValue(),
 								event.getMessage());
 						break;
+					case "client":
+						Assert.assertEquals(entry.getValue(),
+								event.getClientId());
+						break;
 					default:
 						throw new PendingException(entry.getKey());
 					}
@@ -68,6 +72,9 @@ public class Chronicler {
 		switch (expected) {
 		case "send":
 			Assert.assertEquals(ActiveMQEvent.SEND, actual);
+			break;
+		case "recv":
+			Assert.assertEquals(ActiveMQEvent.RECV, actual);
 			break;
 		default:
 			throw new PendingException(expected);

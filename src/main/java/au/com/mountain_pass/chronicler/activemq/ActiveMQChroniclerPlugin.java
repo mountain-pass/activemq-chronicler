@@ -1,7 +1,5 @@
 package au.com.mountain_pass.chronicler.activemq;
 
-import java.io.IOException;
-
 import org.apache.activemq.broker.Broker;
 import org.apache.activemq.broker.BrokerPlugin;
 
@@ -19,10 +17,6 @@ public class ActiveMQChroniclerPlugin implements BrokerPlugin {
 		activeMqChroniclerFilter = new ActiveMQChroniclerFilter(broker,
 				basePath);
 		return activeMqChroniclerFilter;
-	}
-
-	public void shutdown() throws IOException {
-		activeMqChroniclerFilter.shutdown();
 	}
 
 	/**
