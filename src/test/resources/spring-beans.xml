@@ -24,6 +24,8 @@
 	<context:component-scan base-package="au.com.mountain_pass.chronicler" />
 
 
+
+
 	<bean id="activeMqChroniclerPlugin"
 		class="au.com.mountain_pass.chronicler.activemq.ActiveMQChroniclerPlugin">
 		 <property name="basePath" value="build/amqc"/>

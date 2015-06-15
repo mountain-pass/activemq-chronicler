@@ -1,6 +1,9 @@
 package au.com.mountain_pass.chronicler.activemq;
 
 import java.io.IOException;
+import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.jms.TextMessage;
 
@@ -19,11 +22,19 @@ import org.apache.activemq.broker.region.Subscription;
 import org.apache.activemq.command.Message;
 import org.apache.activemq.command.MessageAck;
 import org.apache.activemq.command.MessageDispatch;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 public class ActiveMQChroniclerFilter extends BrokerFilter {
 
 	private Chronicle chronicle;
 	private ExcerptAppender appender;
+
+	private RestTemplate restTemplate = new RestTemplate();
 
 	public ActiveMQChroniclerFilter(Broker next, String basePath)
 			throws IOException {
@@ -48,6 +59,8 @@ public class ActiveMQChroniclerFilter extends BrokerFilter {
 	public void send(ProducerBrokerExchange producerExchange, Message msg)
 			throws Exception {
 
+		String timestamp = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+				.format(new Date());
 		final ActiveMQEvent event = DataValueClasses
 				.newDirectInstance(ActiveMQEvent.class);
 
@@ -56,10 +69,26 @@ public class ActiveMQChroniclerFilter extends BrokerFilter {
 		event.setDestination(msg.getDestination().getQualifiedName());
 		event.setMessage(((TextMessage) msg).getText());
 		event.setClientId(producerExchange.getConnectionContext().getClientId());
-		event.setTimestamp(msg.getBrokerInTime());
+		event.setTimestamp(timestamp);
 		appender.startExcerpt(event.maxSize());
 		appender.write(event);
 		appender.finish();
+
+		// send direct to analyser
+		MultiValueMap<String, Object> params = new LinkedMultiValueMap<String, Object>();
+		params.add("eventType", "send");
+		params.add("clientId", producerExchange.getConnectionContext()
+				.getClientId());
+		params.add("destination", msg.getDestination().getQualifiedName());
+		params.add("message", ((TextMessage) msg).getText());
+		params.add("timestamp", timestamp);
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+		HttpEntity<?> request = new HttpEntity<>(params, headers);
+		URI location = restTemplate.postForLocation(
+				"http://localhost:8080/rest/events", request);
 
 		next.send(producerExchange, msg);
 
@@ -73,10 +102,25 @@ public class ActiveMQChroniclerFilter extends BrokerFilter {
 			event.setDestination(msg.getDestination().getQualifiedName());
 			event.setMessage(((TextMessage) msg).getText());
 			event.setClientId(consumer.getConsumerInfo().getClientId());
-			event.setTimestamp(msg.getBrokerOutTime());
+			event.setTimestamp(timestamp);
 			appender.startExcerpt(event.maxSize());
 			appender.write(event);
 			appender.finish();
+
+			// send direct to analyser
+			MultiValueMap<String, Object> params2 = new LinkedMultiValueMap<String, Object>();
+			params2.add("eventType", "receive");
+			params2.add("clientId", consumer.getConsumerInfo().getClientId());
+			params2.add("destination", msg.getDestination().getQualifiedName());
+			params2.add("message", ((TextMessage) msg).getText());
+			params2.add("timestamp", timestamp);
+
+			HttpHeaders headers2 = new HttpHeaders();
+			headers2.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+
+			HttpEntity<?> request2 = new HttpEntity<>(params2, headers2);
+			URI location2 = restTemplate.postForLocation(
+					"http://localhost:8080/rest/events", request2);
 		}
 
 	}

@@ -5,11 +5,11 @@ Feature: Chronicle
 
   Scenario: Capture send event
     Given "TheClient" is listenting for messages on the ActiveMQ queue "test.queue"
-    When "TheProducer" sends "hello world" to the ActiveMQ queue "test.queue"
+    When "TheProducer" sends "<a @id="5"/>" to the ActiveMQ queue "test.queue"
     Then the following event will be chronicled
-      | event | client      | desination         | msg         |
-      | send  | TheProducer | queue://test.queue | hello world |
+      | event | client      | desination         | msg          |
+      | send  | TheProducer | queue://test.queue | <a @id="5"/> |
     And the following event will be chronicled
-      | event | client      | desination         | msg         |
-      | recv  | TheClient   | queue://test.queue | hello world |
+      | event | client      | desination         | msg          |
+      | recv  | TheClient   | queue://test.queue | <a @id="5"/> |
       

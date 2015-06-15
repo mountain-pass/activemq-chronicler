@@ -68,7 +68,9 @@ dependencies {
 	provided('org.apache.activemq:activemq-broker:5.11.1')
 
 	compile('net.openhft:chronicle:3.4.3')
-
+	compile('org.springframework:spring-web:4.1.5.RELEASE')
+	compile('org.apache.httpcomponents:httpclient:4.3.5')
+ 
 	testCompile('org.apache.activemq:activemq-kahadb-store:5.11.1')
 	testCompile('info.cukes:cucumber-java:1.2.2')
 	testCompile('info.cukes:cucumber-junit:1.2.2')
